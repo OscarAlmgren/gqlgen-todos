@@ -18,12 +18,12 @@ type Link struct {
 // #2
 func (link Link) Save() int64 {
 	//#3
-	stmt, err := mysqldb.Db.Prepare("INSERT INTO Links(Title,Address) VALUES(?,?)")
+	stmt, err := mysqldb.Db.Prepare("INSERT INTO Links(Title,Address, UserID) VALUES(?,?,?)")
 	if err != nil {
 		log.Fatal(err)
 	}
 	//#4
-	res, err := stmt.Exec(link.Title, link.Address)
+	res, err := stmt.Exec(link.Title, link.Address, link.User.ID)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -37,7 +37,7 @@ func (link Link) Save() int64 {
 }
 
 func GetAll() []Link {
-	stmt, err := mysqldb.Db.Prepare("SELECT id, title, address FROM Links")
+	stmt, err := mysqldb.Db.Prepare("SELECT L.id, L.title, L.address, L.UserID, U.Username FROM Links L INNER JOIN Users U ON L.UserID = U.ID") // changed
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -48,12 +48,18 @@ func GetAll() []Link {
 	}
 	defer rows.Close()
 	var links []Link
+	var username string
+	var id string
 	for rows.Next() {
 		var link Link
-		err := rows.Scan(&link.ID, &link.Title, &link.Address)
+		err := rows.Scan(&link.ID, &link.Title, &link.Address, &id, &username) // changed
 		if err != nil {
 			log.Fatal(err)
 		}
+		link.User = &users.User{
+			ID:       id,
+			Username: username,
+		} // changed
 		links = append(links, link)
 	}
 	if err = rows.Err(); err != nil {
