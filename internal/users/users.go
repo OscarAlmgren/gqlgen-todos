@@ -45,7 +45,7 @@ func CheckPasswordHash(password, hash string) bool {
 
 // GetUserIdByUsername check if a user exists in database by given username
 func GetUserIdByUsername(username string) (int, error) {
-	statement, err := mysqldb.Db.Prepare("select ID from Users WHERE Username = ?")
+	statement, err := mysqldb.Db.Prepare("SELECT ID FROM Users WHERE Username = ?")
 	if err != nil {
 		log.Fatal(err)
 	}
