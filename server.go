@@ -7,7 +7,8 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
-	"github.com/go-chi/chi"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/oscaralmgren/hackernews/graph"
 	"github.com/oscaralmgren/hackernews/graph/generated"
 	"github.com/oscaralmgren/hackernews/internal/auth"
@@ -23,6 +24,8 @@ func main() {
 	}
 
 	router := chi.NewRouter()
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recoverer)
 	router.Use(auth.Middleware())
 
 	// init MySQL db, then migrate and close
@@ -32,9 +35,9 @@ func main() {
 
 	server := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", server)
+	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", server)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, router)) // router handler instead of nil
 }
