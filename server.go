@@ -7,8 +7,10 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/go-chi/chi"
 	"github.com/oscaralmgren/hackernews/graph"
 	"github.com/oscaralmgren/hackernews/graph/generated"
+	"github.com/oscaralmgren/hackernews/internal/auth"
 	mysqldb "github.com/oscaralmgren/hackernews/internal/pkg/db/migrations/mysql"
 )
 
@@ -20,7 +22,8 @@ func main() {
 		port = defaultPort
 	}
 
-	// router := chi.NewRouter()
+	router := chi.NewRouter()
+	router.Use(auth.Middleware())
 
 	// init MySQL db, then migrate and close
 	mysqldb.InitDB()
