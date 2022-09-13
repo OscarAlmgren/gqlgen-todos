@@ -1,0 +1,18 @@
+version: "3"
+
+services:
+  graph-api:
+    image: oscaralmgren/graphql-hackernews:scratch-0.1.1
+    ports:
+      - "8080:8080"
+    networks:
+      - api-tier
+
+  database:
+    image: mysql:latest
+    #
+    networks:
+      - api-tier
+
+networks:
+  api-tier: {}
