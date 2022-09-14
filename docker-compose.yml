@@ -1,18 +1,33 @@
 version: "3"
 
 services:
+  database:
+    image: mysql:8.0.30
+    container_name: dockermysqldb
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_DATABASE=hackernews
+      - MYSQL_ROOT_PASSWORD=dbpass
+    healthcheck:
+            test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost"]
+            timeout: 20s
+            retries: 10
+    networks:
+      - api-tier
+
   graph-api:
-    image: oscaralmgren/graphql-hackernews:scratch-0.1.1
+    container_name: docker-graph-api
+    image: oscaralmgren/graphql-hackernews:busybox-0.2
     ports:
       - "8080:8080"
     networks:
       - api-tier
-
-  database:
-    image: mysql:latest
-    #
-    networks:
-      - api-tier
+    depends_on:
+            database:
+                condition: service_healthy
 
 networks:
   api-tier: {}
