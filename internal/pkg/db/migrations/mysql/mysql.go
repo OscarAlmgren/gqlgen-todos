@@ -14,7 +14,7 @@ var Db *sql.DB
 
 func InitDB() {
 	// Use root:dbpass@tcp(172.17.0.2)/hackernews, if you're using Windows.
-	db, err := sql.Open("mysql", "root:dbpass@tcp(localhost)/hackernews")
+	db, err := sql.Open("mysql", "root:dbpass@tcp(dockermysqldb)/hackernews")
 	if err != nil {
 		log.Panic(err)
 	}
@@ -33,12 +33,20 @@ func Migrate() {
 	if err := Db.Ping(); err != nil {
 		log.Fatal(err)
 	}
-	driver, _ := mysql.WithInstance(Db, &mysql.Config{})
-	m, _ := migrate.NewWithDatabaseInstance(
+
+	driver, err := mysql.WithInstance(Db, &mysql.Config{})
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	m, err := migrate.NewWithDatabaseInstance(
 		"file://internal/pkg/db/migrations/mysql",
 		"mysql",
 		driver,
 	)
+	if err != nil {
+		log.Fatal(err)
+	}
 	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
 		log.Fatal(err)
 	}
