@@ -28,5 +28,4 @@ COPY --from=builder /app/internal/pkg/db/migrations/mysql/*.sql internal/pkg/db/
 COPY --from=builder /app/hackernews /usr/bin/
 
 # Run the hello binary.
-EXPOSE 8080
 ENTRYPOINT ["hackernews"]
