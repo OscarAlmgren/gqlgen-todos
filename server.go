@@ -9,6 +9,7 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/joho/godotenv"
 	"github.com/oscaralmgren/hackernews/graph"
 	"github.com/oscaralmgren/hackernews/graph/generated"
 	"github.com/oscaralmgren/hackernews/internal/auth"
@@ -19,6 +20,9 @@ import (
 const defaultPort = "8080"
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Println("No .env file found")
+	}
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
