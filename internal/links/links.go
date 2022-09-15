@@ -1,6 +1,10 @@
 package links
 
 import (
+	"context"
+	"fmt"
+
+	mongodb "github.com/oscaralmgren/hackernews/internal/pkg/db/migrations/mongodb"
 	mysqldb "github.com/oscaralmgren/hackernews/internal/pkg/db/migrations/mysql"
 	"github.com/oscaralmgren/hackernews/internal/users"
 
@@ -17,22 +21,29 @@ type Link struct {
 
 // #2
 func (link Link) Save() int64 {
-	//#3
+	// Mysql flow
 	stmt, err := mysqldb.Db.Prepare("INSERT INTO Links(Title,Address, UserID) VALUES(?,?,?)")
 	if err != nil {
 		log.Fatal(err)
 	}
-	//#4
 	res, err := stmt.Exec(link.Title, link.Address, link.User.ID)
 	if err != nil {
 		log.Fatal(err)
 	}
-	//#5
 	id, err := res.LastInsertId()
 	if err != nil {
 		log.Fatal("Error:", err.Error())
 	}
 	log.Print("Row inserted! Id:", id)
+
+	// MongoDB flow
+	linksCollection := mongodb.MongoDbClient.Database("hackernews").Collection("links")
+	insertResult, err := linksCollection.InsertOne(context.TODO(), link)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("Inserted id:", insertResult.InsertedID)
+
 	return id
 }
 
