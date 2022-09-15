@@ -39,8 +39,8 @@ func main() {
 	mysqldb.Migrate()
 
 	mongodb.InitMongoDB()
-	mongodb.PingMongoDB()
 	defer mongodb.CloseMongoDB()
+	mongodb.PingMongoDB()
 
 	server := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
