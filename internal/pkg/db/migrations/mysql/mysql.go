@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"log"
+	"os"
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/golang-migrate/migrate"
@@ -13,8 +14,12 @@ import (
 var Db *sql.DB
 
 func InitDB() {
+	uri := os.Getenv("MYSQL_ENV")
+	if uri == "" {
+		log.Fatal("You must set your 'MONGODB_URI' environmental variable. See\n\t https://www.mongodb.com/docs/drivers/go/current/usage-examples/#environment-variable")
+	}
 	// Use root:dbpass@tcp(172.17.0.2)/hackernews, if you're using Windows.
-	db, err := sql.Open("mysql", "root:dbpass@tcp(dockermysqldb)/hackernews")
+	db, err := sql.Open("mysql", uri)
 	if err != nil {
 		log.Panic(err)
 	}

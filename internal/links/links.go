@@ -3,6 +3,7 @@ package links
 import (
 	"context"
 	"fmt"
+	"strconv"
 
 	mongodb "github.com/oscaralmgren/hackernews/internal/pkg/db/migrations/mongodb"
 	mysqldb "github.com/oscaralmgren/hackernews/internal/pkg/db/migrations/mysql"
@@ -37,6 +38,7 @@ func (link Link) Save() int64 {
 	log.Print("Row inserted! Id:", id)
 
 	// MongoDB flow
+	link.ID = strconv.FormatInt(id, 16)
 	linksCollection := mongodb.MongoDbClient.Database("hackernews").Collection("links")
 	insertResult, err := linksCollection.InsertOne(context.TODO(), link)
 	if err != nil {
