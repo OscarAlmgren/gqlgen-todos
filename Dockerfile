@@ -25,6 +25,7 @@ WORKDIR /app
 
 # Copy our static executable. 
 COPY --from=builder /app/internal/pkg/db/migrations/mysql/*.sql internal/pkg/db/migrations/mysql/
+COPY --from=builder /app/.env /app/
 COPY --from=builder /app/hackernews /usr/bin/
 
 # Run the hello binary.
