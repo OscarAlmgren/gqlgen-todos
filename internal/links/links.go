@@ -9,9 +9,9 @@ import (
 
 // #1
 type Link struct {
-	ID      string
-	Title   string
-	Address string
+	ID      string `json:"id" bson:"_id"`
+	Title   string `json:"title" bson:"title"`
+	Address string `json:"address" bson:"address"`
 	User    *users.User
 }
 
