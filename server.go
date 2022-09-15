@@ -12,6 +12,7 @@ import (
 	"github.com/oscaralmgren/hackernews/graph"
 	"github.com/oscaralmgren/hackernews/graph/generated"
 	"github.com/oscaralmgren/hackernews/internal/auth"
+	mongodb "github.com/oscaralmgren/hackernews/internal/pkg/db/migrations/mongodb"
 	mysqldb "github.com/oscaralmgren/hackernews/internal/pkg/db/migrations/mysql"
 )
 
@@ -32,6 +33,10 @@ func main() {
 	mysqldb.InitDB()
 	defer mysqldb.CloseDB()
 	mysqldb.Migrate()
+
+	mongodb.InitMongoDB()
+	mongodb.PingMongoDB()
+	defer mongodb.CloseMongoDB()
 
 	server := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{}}))
 
