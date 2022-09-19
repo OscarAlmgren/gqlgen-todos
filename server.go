@@ -38,6 +38,7 @@ func main() {
 	defer mysqldb.CloseDB()
 	mysqldb.Migrate()
 
+	// init mongodb and migrate, close.
 	mongodb.InitMongoDB()
 	defer mongodb.CloseMongoDB()
 	mongodb.PingMongoDB()
